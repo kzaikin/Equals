@@ -26,12 +26,12 @@ public class IntegrationTests
 
         afterAssemblyPath = beforeAssemblyPath.Replace(".dll", "2.dll");
         File.Copy(beforeAssemblyPath, afterAssemblyPath, true);
-        
+
         var assemblyResolver = new MockAssemblyResolver
             {
                 Directory = Path.GetDirectoryName(beforeAssemblyPath)
             };
-        var moduleDefinition = ModuleDefinition.ReadModule(afterAssemblyPath,new ReaderParameters
+        var moduleDefinition = ModuleDefinition.ReadModule(afterAssemblyPath, new ReaderParameters
             {
                 AssemblyResolver = assemblyResolver
             });
@@ -120,6 +120,70 @@ public class IntegrationTests
         Assert.False(first != second);
     }
 
+    [Test]
+    public void Equality_operator_should_return_true_for_empty_object_collections()
+    {
+        var type = assembly.GetType("ObjectCollection");
+        dynamic first = Activator.CreateInstance(type);
+        dynamic second = Activator.CreateInstance(type);
+
+        first.Collection = new object[]
+        {
+        };
+        second.Collection = new object[]
+        {
+        };
+
+        Assert.True(first == second);
+        Assert.False(first != second);
+    }
+
+    [Test]
+    public void Equality_operator_should_return_true_for_equal_object_collections()
+    {
+        var type = assembly.GetType("ObjectCollection");
+        dynamic first = Activator.CreateInstance(type);
+        dynamic second = Activator.CreateInstance(type);
+
+        first.Collection = new object[]
+        {
+            "foo",
+            1.23456
+        };
+        second.Collection = new object[]
+        {
+            "foo",
+            1.23456
+        };
+
+        Assert.True(first == second);
+        Assert.False(first != second);
+    }
+
+    [Test]
+    public void Equality_operator_should_return_false_for_different_object_collections()
+    {
+        var type = assembly.GetType("ObjectCollection");
+        dynamic first = Activator.CreateInstance(type);
+        dynamic second = Activator.CreateInstance(type);
+
+        first.Collection = new object[]
+        {
+            "foo",
+            1.23456
+        };
+        second.Collection = new object[]
+        {
+            "bar",
+            65432.1
+        };
+
+        Assert.True(first != second);
+        Assert.False(first == second);
+    }
+
+
+
     #endregion
 
     #region GetHashCode
@@ -143,7 +207,7 @@ public class IntegrationTests
         instance.Text = null;
 
         var result = instance.GetHashCode();
-        
+
         Assert.AreEqual(0, result);
     }
 
@@ -261,7 +325,7 @@ public class IntegrationTests
     {
         var type = assembly.GetType("OnlyIntCollection");
         dynamic instance = Activator.CreateInstance(type);
-        instance.Collection = new int[] { 1, 2, 3, 4, 5};
+        instance.Collection = new int[] { 1, 2, 3, 4, 5 };
 
         var result = instance.GetHashCode();
 
@@ -332,7 +396,7 @@ public class IntegrationTests
         instance.Z = 12;
         instance.A = 1;
         dynamic propInstance = Activator.CreateInstance(propType);
-        dynamic array = Activator.CreateInstance(propType.MakeArrayType(), new object[] {1});
+        dynamic array = Activator.CreateInstance(propType.MakeArrayType(), new object[] { 1 });
         array[0] = propInstance;
         instance.B = array;
 
@@ -352,7 +416,7 @@ public class IntegrationTests
         instance.X = 12;
         instance.A = 1;
         dynamic propInstance = Activator.CreateInstance(propType);
-        dynamic array = Activator.CreateInstance(propType.MakeArrayType(), new object[] {1});
+        dynamic array = Activator.CreateInstance(propType.MakeArrayType(), new object[] { 1 });
         array[0] = propInstance;
         instance.B = array;
 
@@ -360,7 +424,7 @@ public class IntegrationTests
 
         Assert.AreNotEqual(0, result);
     }
-    
+
     #endregion
 
     #region Equals
@@ -430,7 +494,7 @@ public class IntegrationTests
         dynamic rightInstance = Activator.CreateInstance(rightType);
         rightInstance.A = 1;
 
-        var result = leftInstance.Equals((object) rightInstance);
+        var result = leftInstance.Equals((object)rightInstance);
         return result;
     }
 
@@ -490,7 +554,7 @@ public class IntegrationTests
                 instance.A = 1;
                 dynamic propInstance = Activator.CreateInstance(propType);
 
-                dynamic array = Activator.CreateInstance(propType.MakeArrayType(), new object[] {1});
+                dynamic array = Activator.CreateInstance(propType.MakeArrayType(), new object[] { 1 });
                 array[0] = propInstance;
 
                 instance.B = array;
@@ -594,7 +658,7 @@ public class IntegrationTests
     {
         var type = assembly.GetType("IntCollection");
         dynamic first = Activator.CreateInstance(type);
-        first.Collection = new int[]{1};
+        first.Collection = new int[] { 1 };
         first.Count = 0;
 
         dynamic second = Activator.CreateInstance(type);
